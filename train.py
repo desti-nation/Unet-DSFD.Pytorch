@@ -55,6 +55,9 @@ parser.add_argument('--num_workers',
 parser.add_argument('--cuda',
                     default=True, type=bool,
                     help='Use CUDA to train model')
+parser.add_argument('--fix_unet',
+                    default=True, type=bool,
+                    help='fix unet weights')
 parser.add_argument('--lr', '--learning-rate',
                     default=1e-3, type=float,
                     help='initial learning rate')
@@ -132,7 +135,7 @@ def train():
     # dsfd_net = build_net('train', cfg.NUM_CLASSES, args.model)
     # net = dsfd_net
 
-    net = DSFD_Unet(args.dsfd_weights, args.unet_weights, mode="train")
+    net = DSFD_Unet(args.dsfd_weights, args.unet_weights, mode="train", fix_unet = args.fix_unet)
 
 
     if args.resume:

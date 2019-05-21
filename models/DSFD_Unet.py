@@ -26,7 +26,7 @@ from unet import *
 
 class DSFD_Unet(nn.Module):
 
-    def __init__(self, dsfd_weights = None, unet_weights = None, mode = "train"):
+    def __init__(self, dsfd_weights = None, unet_weights = None, mode = "train", fix_unet = True):
         super(DSFD_Unet, self).__init__()
         self.dsfd = build_net(mode, cfg.NUM_CLASSES)
         self.unet = UNet(3, 3)
@@ -34,8 +34,9 @@ class DSFD_Unet(nn.Module):
             self.dsfd.load_state_dict(torch.load(dsfd_weights))
         if unet_weights:
             self.unet.load_state_dict(torch.load(unet_weights))
-        for p in self.unet.parameters():
-            p.requires_grad = False
+        if fix_unet:
+            for p in self.unet.parameters():
+                p.requires_grad = False
         print("Fit params of unet")
 
     def forward(self, x):
