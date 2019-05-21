@@ -1,6 +1,6 @@
 Competition solution for UG2+ Challenge (Semi-)Supervised Face Detection in Low Light Conditions.
 
-## pretrained weights
+## weights
 Link：https://share.weiyun.com/5Oib0Rw Password：pqx9mn
 
 ## train
