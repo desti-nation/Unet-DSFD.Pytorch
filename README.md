@@ -1,71 +1,27 @@
-## DSFD: Dual Shot Face Detector ##
-[A PyTorch Implementation of Dual Shot Face Detector](https://arxiv.org/abs/1810.10220?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+arxiv%2FQSXk+%28ExcitingAds%21+cs+updates+on+arXiv.org%29)
+## weights
+Link：https://share.weiyun.com/5Oib0Rw Password：pqx9mn
 
-### Description
-I use basenet [vgg](https://pan.baidu.com/s/1Q-YqoxJyqvln6KTcIck1tQ) to train DSFD,the model can be downloaded in [DSFD](https://pan.baidu.com/s/17cpDHEwYVxWmOIPqUy5zCQ).the AP in WIDER FACE as following:  
+## train
 
-| Easy MAP | Medium MAP	|  hard MAP |
-| ---------|------------| --------- |
-|	0.946  |    0.937   |  0.880    | 
- 
-the AP in AFW,PASCAL,FDDB as following:
+on single gpu and train on unet weight and dsfd weight
 
-| 	AFW     |   PASCAL	|   FDDB   |
-| --------- |-----------| ---------|
-|	99.89   |    99.11  |  0.983   |
- 
-I'm using resnet50/resnet101 to train DSFD,the result will be published later on 
-### Requirement
-* pytorch 0.3 
-* opencv 
-* numpy 
-* easydict
-
-### Prepare data 
-1. download WIDER face dataset
-2. modify data/config.py 
-3. ``` python prepare_wider_data.py```
-
-
-### Train 
-``` 
-python train.py --batch_size 4 
-		--model vgg\resnet50\resnet101 
-		--lr 5e-4
-``` 
-
-### Evalution
-according to yourself dataset path,modify data/config.py 
-1. Evaluate on AFW.
 ```
-python tools/afw_test.py
-```
-2. Evaluate on FDDB 
-```
-python tools/fddb_test.py
-```
-3. Evaluate on PASCAL  face 
-``` 
-python tools/pascal_test.py
-```
-4. test on WIDER FACE 
-```
-python tools/wider_test.py
-```
-### Demo 
-you can test yourself image
-```
-python demo.py
+CUDA_VISIBLE_DEVICES=1 python3 train.py --exp_name 02-weight=01last-lr=1e-3-data=orig --lr 1e-3 --dsfd_weights ./pretrained_weights/dsfd_vgg_0.880.pth --unet_weights ./pretrained_weights/unet_enhance.pth --batch_size 3 --resume ./train_experiments/01-weight=dsfd+unet-lr=1e-4-data=orig-keyboardinter35/weights/dsfd_checkpoint_last.pth
 ```
 
-### Result
-1. demo
-<div align="center">
-<img src="https://github.com/yxlijun/DSFD.pytorch/blob/master/tmp/0_Parade_marchingband_1_488.jpg" height="300px" alt="demo" >
-<img src="https://github.com/yxlijun/DSFD.pytorch/blob/master/tmp/0_Parade_marchingband_1_20.jpg" height="300px" alt="demo" >
-</div>
+on multiple gpus and train on full weights
+```
+python3 train.py --exp_name 05-weight=04best-lr=1e-6-data=orig --lr 1e-6  --batch_size 20 --resume /home/lb/lb/DSFD.Unet.pytorch/train_experiments/04-weight=03last-lr=1e-4-data=orig/weights/dsfd_best_[epoch]-2-[val_loss]-4.538.pth --multigpu True
+```
+
+## test
+
+```
+CUDA_VISIBLE_DEVICES=0 python3 demo.py --save_dir /home/lb/lb/DSFD.Unet.pytorch/test_experiments/05-weight=04best-lr=1e-6-data=orig-thre=0.3  --model  /home/lb/lb/DSFD.Unet.pytorch/train_experiments/05-weight=04best-lr=1e-6-data=orig/weights/dsfd_best_[epoch]-6-[val_loss]-4.536.pth --thresh 0.3 --img_path /home/lb/lx/data/track2.2_test_sample --gt_dir /home/lb/lx/data/track2.2_test_label/
+```
+
+## calculate AP
+>  AP code is provided at https://github.com/Ir1d/DARKFACE_eval_tools. We also provide an independent docker image at https://hub.docker.com/r/scaffrey/eval_tools. 
 
 
-### References
-* [Dual Shot Face Detector](https://arxiv.org/abs/1810.10220?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+arxiv%2FQSXk+%28ExcitingAds%21+cs+updates+on+arXiv.org%29)
-* [ssd.pytorch](https://github.com/amdegroot/ssd.pytorch)
+
